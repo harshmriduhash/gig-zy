@@ -1,5 +1,5 @@
-import React from 'react';
-import { BriefcaseIcon } from 'lucide-react';
+import React from "react";
+import { BriefcaseIcon } from "lucide-react";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
