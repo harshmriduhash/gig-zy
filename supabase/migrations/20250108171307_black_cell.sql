@@ -1,0 +1,165 @@
+/*
+  # Fix User Roles and Permissions Schema
+
+  1. Changes
+    - Drop and recreate policies to avoid conflicts
+    - Fix admin role policy to prevent recursion
+    - Ensure proper RLS setup
+  
+  2. Security
+    - Enable RLS on all tables
+    - Set up proper access policies
+*/
+
+-- Drop all existing policies first
+DROP POLICY IF EXISTS "Roles are viewable by authenticated users" ON roles;
+DROP POLICY IF EXISTS "Permissions are viewable by authenticated users" ON permissions;
+DROP POLICY IF EXISTS "Role permissions are viewable by authenticated users" ON role_permissions;
+DROP POLICY IF EXISTS "Users can view their own roles" ON user_roles;
+DROP POLICY IF EXISTS "Allow insert during signup" ON user_roles;
+DROP POLICY IF EXISTS "Admins can manage user roles" ON user_roles;
+DROP POLICY IF EXISTS "Admins can manage all user roles" ON user_roles;
+
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS user_roles CASCADE;
+DROP TABLE IF EXISTS role_permissions CASCADE;
+DROP TABLE IF EXISTS permissions CASCADE;
+DROP TABLE IF EXISTS roles CASCADE;
+
+-- Create roles table
+CREATE TABLE roles (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text UNIQUE NOT NULL,
+  description text,
+  created_at timestamptz DEFAULT now()
+);
+
+-- Create permissions table
+CREATE TABLE permissions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text UNIQUE NOT NULL,
+  description text,
+  created_at timestamptz DEFAULT now()
+);
+
+-- Create role_permissions junction table
+CREATE TABLE role_permissions (
+  role_id uuid REFERENCES roles(id) ON DELETE CASCADE,
+  permission_id uuid REFERENCES permissions(id) ON DELETE CASCADE,
+  PRIMARY KEY (role_id, permission_id)
+);
+
+-- Create user_roles junction table
+CREATE TABLE user_roles (
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  role_id uuid REFERENCES roles(id) ON DELETE CASCADE,
+  PRIMARY KEY (user_id, role_id)
+);
+
+-- Enable Row Level Security
+ALTER TABLE roles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE permissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE role_permissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
+
+-- Create new policies
+CREATE POLICY "Roles are viewable by authenticated users"
+  ON roles FOR SELECT
+  USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Permissions are viewable by authenticated users"
+  ON permissions FOR SELECT
+  USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Role permissions are viewable by authenticated users"
+  ON role_permissions FOR SELECT
+  USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Users can view their own roles"
+  ON user_roles FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Allow insert during signup"
+  ON user_roles FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "Admins can manage roles"
+  ON user_roles FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM roles r
+      WHERE r.name = 'admin'
+      AND r.id IN (
+        SELECT role_id FROM user_roles
+        WHERE user_id = auth.uid()
+      )
+    )
+  );
+
+-- Insert default roles
+INSERT INTO roles (name, description) VALUES
+  ('admin', 'Full system access and management capabilities'),
+  ('freelancer', 'Can create profiles, bid on projects, and manage their services'),
+  ('client', 'Can post projects, hire freelancers, and manage their projects')
+ON CONFLICT (name) DO NOTHING;
+
+-- Insert basic permissions
+INSERT INTO permissions (name, description) VALUES
+  ('project.create', 'Can create new projects'),
+  ('project.update', 'Can update project details'),
+  ('project.delete', 'Can delete projects'),
+  ('project.view', 'Can view project details'),
+  ('bid.create', 'Can create bids on projects'),
+  ('bid.update', 'Can update own bids'),
+  ('bid.delete', 'Can delete own bids'),
+  ('bid.view', 'Can view bids'),
+  ('profile.create', 'Can create profile'),
+  ('profile.update', 'Can update own profile'),
+  ('profile.delete', 'Can delete own profile'),
+  ('profile.view', 'Can view profiles'),
+  ('admin.users', 'Can manage users'),
+  ('admin.roles', 'Can manage roles and permissions'),
+  ('admin.projects', 'Can manage all projects'),
+  ('admin.system', 'Can manage system settings')
+ON CONFLICT (name) DO NOTHING;
+
+-- Assign permissions to roles
+WITH role_data AS (
+  SELECT id, name FROM roles
+),
+permission_data AS (
+  SELECT id, name FROM permissions
+)
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT 
+  r.id,
+  p.id
+FROM role_data r
+CROSS JOIN permission_data p
+WHERE 
+  (r.name = 'freelancer' AND p.name IN (
+    'project.view',
+    'bid.create',
+    'bid.update',
+    'bid.delete',
+    'bid.view',
+    'profile.create',
+    'profile.update',
+    'profile.delete',
+    'profile.view'
+  ))
+  OR
+  (r.name = 'client' AND p.name IN (
+    'project.create',
+    'project.update',
+    'project.delete',
+    'project.view',
+    'bid.view',
+    'profile.create',
+    'profile.update',
+    'profile.delete',
+    'profile.view'
+  ))
+  OR
+  (r.name = 'admin' AND p.name LIKE 'admin.%')
+ON CONFLICT (role_id, permission_id) DO NOTHING;
