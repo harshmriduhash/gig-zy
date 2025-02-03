@@ -1,13 +1,13 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import type { BlogPost } from '../../types';
+import React from "react";
+import { Link } from "react-router-dom";
+import type { BlogPost } from "../../types";
 
 interface BlogCardProps {
   post: BlogPost;
-  size?: 'small' | 'medium' | 'large';
+  size?: "small" | "medium" | "large";
 }
 
-export function BlogCard({ post, size = 'medium' }: BlogCardProps) {
+export function BlogCard({ post, size = "medium" }: BlogCardProps) {
   return (
     <Link to={`/blog/posts/${post.id}`} className="block">
       <article className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
