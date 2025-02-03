@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface BlogPostHeaderProps {
   title: string;
@@ -11,7 +11,13 @@ interface BlogPostHeaderProps {
   imageUrl: string;
 }
 
-export function BlogPostHeader({ title, author, publishDate, category, imageUrl }: BlogPostHeaderProps) {
+export function BlogPostHeader({
+  title,
+  author,
+  publishDate,
+  category,
+  imageUrl,
+}: BlogPostHeaderProps) {
   return (
     <header className="mb-8">
       <div className="relative h-[400px] mb-8">
