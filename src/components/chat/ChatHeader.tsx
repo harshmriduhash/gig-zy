@@ -1,14 +1,17 @@
-import React from 'react';
-import { MessageSquare, Users, Settings } from 'lucide-react';
-import { ClearHistoryButton } from './ClearHistoryButton';
-import { useAuth } from '../../contexts/AuthContext';
+import React from "react";
+import { MessageSquare, Users, Settings } from "lucide-react";
+import { ClearHistoryButton } from "./ClearHistoryButton";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface ChatHeaderProps {
   participantCount?: number;
   onSettingsClick?: () => void;
 }
 
-export function ChatHeader({ participantCount, onSettingsClick }: ChatHeaderProps) {
+export function ChatHeader({
+  participantCount,
+  onSettingsClick,
+}: ChatHeaderProps) {
   const { user } = useAuth();
 
   return (
@@ -25,11 +28,12 @@ export function ChatHeader({ participantCount, onSettingsClick }: ChatHeaderProp
             {participantCount !== undefined && (
               <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <Users className="h-4 w-4 mr-1" />
-                {participantCount} {participantCount === 1 ? 'participant' : 'participants'}
+                {participantCount}{" "}
+                {participantCount === 1 ? "participant" : "participants"}
               </div>
             )}
           </div>
-          
+
           <div className="flex items-center space-x-3">
             <ClearHistoryButton />
             {onSettingsClick && (
