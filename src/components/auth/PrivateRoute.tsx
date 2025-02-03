@@ -1,13 +1,16 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface PrivateRouteProps {
   children: React.ReactNode;
   requiredPermissions?: string[];
 }
 
-export function PrivateRoute({ children, requiredPermissions = [] }: PrivateRouteProps) {
+export function PrivateRoute({
+  children,
+  requiredPermissions = [],
+}: PrivateRouteProps) {
   const { user, isLoading, hasPermission } = useAuth();
   const location = useLocation();
 
@@ -23,7 +26,10 @@ export function PrivateRoute({ children, requiredPermissions = [] }: PrivateRout
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requiredPermissions.length > 0 && !requiredPermissions.every(hasPermission)) {
+  if (
+    requiredPermissions.length > 0 &&
+    !requiredPermissions.every(hasPermission)
+  ) {
     return <Navigate to="/" replace />;
   }
 
