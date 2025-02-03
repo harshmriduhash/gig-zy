@@ -1,6 +1,6 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface RoleBasedRouteProps {
   children: React.ReactNode;
@@ -8,10 +8,10 @@ interface RoleBasedRouteProps {
   fallbackPath?: string;
 }
 
-export function RoleBasedRoute({ 
-  children, 
-  requiredPermissions = [], 
-  fallbackPath = '/' 
+export function RoleBasedRoute({
+  children,
+  requiredPermissions = [],
+  fallbackPath = "/",
 }: RoleBasedRouteProps) {
   const { user, hasPermission, isLoading } = useAuth();
 
@@ -23,7 +23,7 @@ export function RoleBasedRoute({
     return <Navigate to="/login" replace />;
   }
 
-  const hasRequiredPermissions = requiredPermissions.every(permission => 
+  const hasRequiredPermissions = requiredPermissions.every((permission) =>
     hasPermission(permission)
   );
 
