@@ -1,16 +1,16 @@
-import React from 'react';
-import { Layout } from '../../components/layout/Layout';
-import { WorkHeader } from '../../components/work/WorkHeader';
-import { WorkFilters } from '../../components/work/filters/WorkFilters';
-import { ProjectList } from '../../components/work/projects/ProjectList';
-import { useProjects } from '../../hooks/useProjects';
+import React from "react";
+import { Layout } from "../../components/layout/Layout";
+import { WorkHeader } from "../../components/work/WorkHeader";
+import { WorkFilters } from "../../components/work/filters/WorkFilters";
+import { ProjectList } from "../../components/work/projects/ProjectList";
+import { useProjects } from "../../hooks/useProjects";
 
 export function FindWorkPage() {
   const { projects, isLoading, error } = useProjects();
 
   return (
     <Layout>
-      <WorkHeader 
+      <WorkHeader
         title="Find Work"
         description="Browse through thousands of projects across various categories and find the perfect opportunity for your skills"
       />
@@ -20,7 +20,7 @@ export function FindWorkPage() {
             <WorkFilters />
           </div>
           <div className="flex-1">
-            <ProjectList 
+            <ProjectList
               projects={projects}
               isLoading={isLoading}
               error={error}
