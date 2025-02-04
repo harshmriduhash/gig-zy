@@ -1,6 +1,6 @@
-import React from 'react';
-import { DollarSign, Clock } from 'lucide-react';
-import type { Project } from '../types';
+import React from "react";
+import { DollarSign, Clock } from "lucide-react";
+import type { Project } from "../types";
 
 interface ProjectCardProps {
   project: Project;
@@ -9,14 +9,20 @@ interface ProjectCardProps {
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{project.title}</h3>
-      <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{project.description}</p>
-      
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        {project.title}
+      </h3>
+      <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+        {project.description}
+      </p>
+
       <div className="flex items-center mb-4">
         <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400 mr-2" />
-        <span className="font-medium text-gray-900 dark:text-white">${project.budget}</span>
+        <span className="font-medium text-gray-900 dark:text-white">
+          ${project.budget}
+        </span>
       </div>
-      
+
       <div className="flex flex-wrap gap-2 mb-4">
         {project.skills.map((skill) => (
           <span
@@ -27,7 +33,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </span>
         ))}
       </div>
-      
+
       <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
         <div className="flex items-center">
           <Clock className="h-4 w-4 mr-1" />
