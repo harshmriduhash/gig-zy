@@ -1,12 +1,12 @@
-import React from 'react';
-import { Layout } from '../../components/layout/Layout';
-import { WorkHeader } from '../../components/work/WorkHeader';
-import { ProjectForm } from '../../components/work/post/ProjectForm';
+import React from "react";
+import { Layout } from "../../components/layout/Layout";
+import { WorkHeader } from "../../components/work/WorkHeader";
+import { ProjectForm } from "../../components/work/post/ProjectForm";
 
 export function PostProjectPage() {
   return (
     <Layout>
-      <WorkHeader 
+      <WorkHeader
         title="Post a Project"
         description="Share your project details and connect with talented freelancers ready to bring your vision to life"
       />
