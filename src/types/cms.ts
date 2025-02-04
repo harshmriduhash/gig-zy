@@ -1,6 +1,6 @@
 export interface ContentField {
   name: string;
-  type: 'text' | 'textarea' | 'number' | 'array' | 'object' | 'boolean';
+  type: "text" | "textarea" | "number" | "array" | "object" | "boolean";
   required: boolean;
   label: string;
   fields?: ContentField[]; // For nested fields in object type
@@ -21,7 +21,7 @@ export interface ContentItem {
   title: string;
   slug: string;
   content: Record<string, any>;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   created_by: string;
   updated_by: string;
   published_at: string | null;
